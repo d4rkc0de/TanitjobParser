@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -19,7 +20,7 @@ import nachos.com.tanitjobparser.model.Offer;
  * Created by lichiheb on 28/12/16.
  */
 
-public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferHolder> {
+public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferHolder>  {
 
 
     private List<Offer> listData;
@@ -50,7 +51,7 @@ public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferHolder>
         return listData.size();
     }
 
-    class OfferHolder extends RecyclerView.ViewHolder {
+    class OfferHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView title,comanyName,location,date;
         private ImageView image;
@@ -64,6 +65,17 @@ public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferHolder>
             date = (TextView) itemView.findViewById(R.id.date);
             image = (ImageView) itemView.findViewById(R.id.image);
             container = itemView.findViewById(R.id.container);
+
+            image.setOnClickListener(this);
+            container.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if(v.getId() == R.id.container)
+                Toast.makeText(context,"container",Toast.LENGTH_SHORT).show();
+            else if(v.getId() == R.id.image)
+                Toast.makeText(context,"image",Toast.LENGTH_SHORT).show();
         }
     }
 }

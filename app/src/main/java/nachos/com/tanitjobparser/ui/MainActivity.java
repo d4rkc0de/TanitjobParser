@@ -1,33 +1,37 @@
-package nachos.com.tanitjobparser;
+package nachos.com.tanitjobparser.ui;
 
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import com.parse.ParseObject;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.widget.Toast;
+
+import org.greenrobot.eventbus.EventBus;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.StringTokenizer;
 
+import nachos.com.tanitjobparser.R;
 import nachos.com.tanitjobparser.adapter.OfferAdapter;
 import nachos.com.tanitjobparser.model.Offer;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OfferAdapter.ItemClickCallback {
 
-    RecyclerView recyclerView;
-    OfferAdapter adapter;
+    private RecyclerView recyclerView;
+    private OfferAdapter adapter;
+    private List<Offer> mResults;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected List<Offer> doInBackground(String... urls) {
             try {
-
                 List<Offer> results = new ArrayList<>();
                 Document document = Jsoup.connect(urls[0]).header("Accept-Encoding", "gzip, deflate")
                         .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
@@ -89,12 +92,66 @@ public class MainActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(List<Offer> results) {
-            adapter = new OfferAdapter(results,MainActivity.this);
-            recyclerView.setAdapter(adapter);
+            mResults = results;
+            if(results != null) {
+                adapter = new OfferAdapter(results,MainActivity.this);
+                recyclerView.setAdapter(adapter);
+                adapter.setItemClickCallback(MainActivity.this);
+
+                ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
+                itemTouchHelper.attachToRecyclerView(recyclerView);
+            }
         }
     }
 
+    private ItemTouchHelper.Callback createHelperCallback() {
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN,
+                        ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
+                    @Override
+                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                        moveItem(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                        return true;
+                    }
+
+                    @Override
+                    public void onSwiped(final RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                        deleteItem(viewHolder.getAdapterPosition());
+                    }
+                };
+        return simpleItemTouchCallback;
+    }
+
+    private void addItemToList(Offer offer) {
+        mResults.add(offer);
+        adapter.notifyItemInserted(mResults.indexOf(offer));
+    }
+
+    private void moveItem(int oldPos, int newPos) {
+
+        Offer offer = mResults.get(oldPos);
+        mResults.remove(oldPos);
+        mResults.add(newPos, offer);
+        adapter.notifyItemMoved(oldPos, newPos);
+    }
+
+    private void deleteItem(final int position) {
+        mResults.remove(position);
+        adapter.notifyItemRemoved(position);
+    }
+
+    @Override
+    public void onItemClick(int pos) {
+        Offer offer = mResults.get(pos);
+        EventBus.getDefault().postSticky(offer);
+        startActivity(new Intent(MainActivity.this,DetailledOffer.class));
+        //Toast.makeText(getApplicationContext(),"item " + offer.getTitle(),Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCompanyImageClick(int pos) {
+        Toast.makeText(getApplicationContext(),"position " + String.valueOf(pos),Toast.LENGTH_SHORT).show();
+    }
 
 
 }

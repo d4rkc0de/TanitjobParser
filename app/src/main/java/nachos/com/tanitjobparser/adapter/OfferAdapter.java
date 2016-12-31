@@ -26,6 +26,18 @@ public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferHolder>
     private List<Offer> listData;
     private LayoutInflater inflater;
     private Context context;
+
+    private ItemClickCallback itemClickCallback;
+
+    public interface ItemClickCallback {
+        void onItemClick(int pos);
+        void onCompanyImageClick(int pos);
+    }
+
+    public void setItemClickCallback(final ItemClickCallback itemClickCallback) {
+        this.itemClickCallback = itemClickCallback;
+    }
+
     public OfferAdapter(List<Offer> listData, Context context) {
         this.inflater = LayoutInflater.from(context);
         this.listData = listData;
@@ -73,9 +85,9 @@ public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferHolder>
         @Override
         public void onClick(View v) {
             if(v.getId() == R.id.container)
-                Toast.makeText(context,"container",Toast.LENGTH_SHORT).show();
+                itemClickCallback.onItemClick(getAdapterPosition());
             else if(v.getId() == R.id.image)
-                Toast.makeText(context,"image",Toast.LENGTH_SHORT).show();
+                itemClickCallback.onCompanyImageClick(getAdapterPosition());
         }
     }
 }

@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        (new Parser()).execute("http://tanitjobs.com/search-results-jobs/?action=search&listing_type[equal]=Job&keywords[all_words]=&JobCategory[multi_like][]=378");
+        (new Parser()).execute("http://tanitjobs.com/search-results-jobs/?searchId=1483197031.949&action=search&page=1&view=list");
     }
 
     private class Parser extends AsyncTask<String, Void, List<Offer>> {

@@ -4,6 +4,7 @@ package nachos.com.tanitjobparser.ui;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,26 +12,22 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
 import nachos.com.tanitjobparser.R;
 import nachos.com.tanitjobparser.adapter.OfferAdapter;
 import nachos.com.tanitjobparser.model.Offer;
+import nachos.com.tanitjobparser.network.TanitjobsParser;
 
-public class MainActivity extends AppCompatActivity implements OfferAdapter.ItemClickCallback {
+public class MainActivity extends AppCompatActivity implements OfferAdapter.ItemClickCallback,TanitjobsParser.AsyncTaskCallback {
 
     private RecyclerView recyclerView;
     private OfferAdapter adapter;
     private List<Offer> mResults;
+    SwipeRefreshLayout mSwipeRefreshLayout;
+    private int counter = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,68 +36,38 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        (new Parser()).execute("http://tanitjobs.com/search-results-jobs/?searchId=1483197031.949&action=search&page=1&view=list");
+
+        mResults = new ArrayList<>();
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadMore(counter++);
+                adapter.notifyDataSetChanged();
+                recyclerView.post( new Runnable() {
+                    @Override
+                    public void run() {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                });
+            }
+        });
+
+        loadMore(counter++);
+
     }
 
-    private class Parser extends AsyncTask<String, Void, List<Offer>> {
+    @Override
+    public void onDone(List<Offer> results) {
+        mResults.addAll(results);
+        //mResults = results;
+        if(results != null) {
+            adapter = new OfferAdapter(mResults,MainActivity.this);
+            recyclerView.setAdapter(adapter);
+            adapter.setItemClickCallback(MainActivity.this);
 
-        @Override
-        protected List<Offer> doInBackground(String... urls) {
-            try {
-                List<Offer> results = new ArrayList<>();
-                Document document = Jsoup.connect(urls[0]).header("Accept-Encoding", "gzip, deflate")
-                        .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-                        .maxBodySize(0).timeout(600000).get();
-                for(Element element:document.select("div.offre-emploi")) {
-                    Element detail = element.select("div.detail").first();
-                    String title = detail.select("div.detail a[href]").first().ownText();
-                    String url = detail.select("a.title_offre").first().attr("abs:href");
-                    String comanyName = detail.select("#companytitle").first().text();
-                    String imgUrl = element.select("div.image img").first().absUrl("src");
-                    Element descriptionjob = detail.select("div.descriptionjob").first();
-                    String datePlace = "";
-                    if(descriptionjob.select("p.infoplusoffer").first() != null)
-                         datePlace = descriptionjob.select("p.infoplusoffer").first().text();
-                    String place = "";
-                    String dateString = "";
-                    String[] splitedDatePlace = datePlace.split("\\|");
-                    if(splitedDatePlace.length == 2) {
-                        place = splitedDatePlace[0];
-                        dateString = splitedDatePlace[1];
-                    } else if(splitedDatePlace.length == 1 && !splitedDatePlace[0].equals("")) {
-                        if(Character.isLetter(splitedDatePlace[0].charAt(0)))
-                            place = splitedDatePlace[0];
-                        else
-                            dateString = splitedDatePlace[0];
-                    }
-                    Date date = null;
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
-                    try {
-                        date = simpleDateFormat.parse(dateString);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-
-                    Offer offre = new Offer(title,url,comanyName,imgUrl,place,date);
-                    results.add(offre);
-                }
-                return results;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(List<Offer> results) {
-            mResults = results;
-            if(results != null) {
-                adapter = new OfferAdapter(results,MainActivity.this);
-                recyclerView.setAdapter(adapter);
-                adapter.setItemClickCallback(MainActivity.this);
-
-                ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
-                itemTouchHelper.attachToRecyclerView(recyclerView);
-            }
+            ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
+            itemTouchHelper.attachToRecyclerView(recyclerView);
         }
     }
 
@@ -145,7 +112,6 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
         Offer offer = mResults.get(pos);
         EventBus.getDefault().postSticky(offer);
         startActivity(new Intent(MainActivity.this,DetailledOffer.class));
-        //Toast.makeText(getApplicationContext(),"item " + offer.getTitle(),Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -153,5 +119,10 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
         Toast.makeText(getApplicationContext(),"position " + String.valueOf(pos),Toast.LENGTH_SHORT).show();
     }
 
+    private void loadMore(int counter) {
+        TanitjobsParser tanitjobsParser = new TanitjobsParser();
+        tanitjobsParser.setAsyncTaskCallback(MainActivity.this);
+        tanitjobsParser.execute("http://tanitjobs.com/search-results-jobs/?searchId=1483197031.949&action=search&page=" + String.valueOf(counter) + "&view=list");
+    }
 
 }

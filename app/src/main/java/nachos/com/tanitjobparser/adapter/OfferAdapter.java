@@ -22,7 +22,6 @@ import nachos.com.tanitjobparser.model.Offer;
 
 public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferHolder>  {
 
-
     private List<Offer> listData;
     private LayoutInflater inflater;
     private Context context;

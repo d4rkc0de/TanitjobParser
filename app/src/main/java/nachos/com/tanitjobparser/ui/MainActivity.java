@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
             adapter = new OfferAdapter(mResults,MainActivity.this);
             recyclerView.setAdapter(adapter);
             adapter.setItemClickCallback(MainActivity.this);
+            
 
             ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
             itemTouchHelper.attachToRecyclerView(recyclerView);
@@ -119,10 +120,16 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
         Toast.makeText(getApplicationContext(),"position " + String.valueOf(pos),Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void moveItemUp(int pos) {
+
+    }
+
     private void loadMore(int counter) {
         TanitjobsParser tanitjobsParser = new TanitjobsParser();
         tanitjobsParser.setAsyncTaskCallback(MainActivity.this);
-        tanitjobsParser.execute("http://tanitjobs.com/search-results-jobs/?searchId=1483197031.949&action=search&page=" + String.valueOf(counter) + "&view=list");
+        tanitjobsParser.execute("http://tanitjobs.com/search-results-jobs/?searchId=1483197031.949&action=search&page="
+                + String.valueOf(counter) + "&view=list");
     }
 
 }

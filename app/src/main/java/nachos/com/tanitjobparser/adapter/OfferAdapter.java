@@ -2,6 +2,7 @@ package nachos.com.tanitjobparser.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,9 @@ import nachos.com.tanitjobparser.model.Offer;
 
 public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferHolder>  {
 
+    private final int VIEW_ITEM = 1;
+    private final int VIEW_PROG = 0;
+
     private List<Offer> listData;
     private LayoutInflater inflater;
     private Context context;
@@ -31,6 +35,7 @@ public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferHolder>
     public interface ItemClickCallback {
         void onItemClick(int pos);
         void onCompanyImageClick(int pos);
+        void moveItemUp(int pos);
     }
 
     public void setItemClickCallback(final ItemClickCallback itemClickCallback) {
@@ -42,8 +47,18 @@ public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferHolder>
         this.listData = listData;
         this.context = context;
     }
+
+    @Override
+    public int getItemViewType(int position) {
+        return listData.get(position) != null ? VIEW_ITEM : VIEW_PROG;
+    }
+
     @Override
     public OfferHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == VIEW_ITEM)
+            Log.d("buttom","buttom");
+        else
+            Log.d("buttom","Not buttom");
         View view = inflater.inflate(R.layout.list_item,parent,false);
         return new OfferHolder(view);
     }

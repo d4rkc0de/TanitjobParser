@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,11 +22,13 @@ import nachos.com.tanitjobparser.model.Offer;
  * Created by lichiheb on 28/12/16.
  */
 
-public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferHolder>  {
+public class OfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  {
 
     private List<Offer> listData;
     private LayoutInflater inflater;
     private Context context;
+    private final int VIEW_ITEM = 1;
+    private final int VIEW_PROG = 0;
 
     private ItemClickCallback itemClickCallback;
 
@@ -45,20 +48,38 @@ public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferHolder>
         this.context = context;
     }
 
-
     @Override
-    public OfferHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.list_item,parent,false);
-        return new OfferHolder(view);
+    public int getItemViewType(int position) {
+        return (listData.size()+1)%2 != 0 ? VIEW_ITEM : VIEW_PROG;
     }
 
     @Override
-    public void onBindViewHolder(OfferHolder holder, int position) {
-        Offer offer = listData.get(position);
-        holder.title.setText(offer.getTitle());
-        holder.comanyName.setText(offer.getComanyName());
-        holder.location.setText(offer.getPlace());
-        Picasso.with(context).load(offer.getImgUrl()).into(holder.image);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        RecyclerView.ViewHolder vh;
+        if (viewType == VIEW_ITEM) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.list_item, parent, false);
+
+            vh = new OfferHolder(v);
+        } else {
+            View v = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.progressbar_item, parent, false);
+            vh = new ProgressViewHolder(v);
+        }
+        return vh;
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof OfferHolder) {
+            Offer offer = listData.get(position);
+            ((OfferHolder)holder).title.setText(offer.getTitle());
+            ((OfferHolder)holder).comanyName.setText(offer.getComanyName());
+            ((OfferHolder)holder).location.setText(offer.getPlace());
+            Picasso.with(context).load(offer.getImgUrl()).into(((OfferHolder)holder).image);
+        }  else {
+            ((ProgressViewHolder) holder).progressBar.setIndeterminate(true);
+        }
     }
 
     @Override
@@ -91,6 +112,15 @@ public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferHolder>
                 itemClickCallback.onItemClick(getAdapterPosition());
             else if(v.getId() == R.id.image)
                 itemClickCallback.onCompanyImageClick(getAdapterPosition());
+        }
+    }
+
+    public static class ProgressViewHolder extends RecyclerView.ViewHolder {
+        public ProgressBar progressBar;
+
+        public ProgressViewHolder(View v) {
+            super(v);
+            progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
         }
     }
 }

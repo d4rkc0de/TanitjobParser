@@ -23,9 +23,6 @@ import nachos.com.tanitjobparser.model.Offer;
 
 public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferHolder>  {
 
-    private final int VIEW_ITEM = 1;
-    private final int VIEW_PROG = 0;
-
     private List<Offer> listData;
     private LayoutInflater inflater;
     private Context context;
@@ -48,17 +45,9 @@ public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferHolder>
         this.context = context;
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        return listData.get(position) != null ? VIEW_ITEM : VIEW_PROG;
-    }
 
     @Override
     public OfferHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == VIEW_ITEM)
-            Log.d("buttom","buttom");
-        else
-            Log.d("buttom","Not buttom");
         View view = inflater.inflate(R.layout.list_item,parent,false);
         return new OfferHolder(view);
     }

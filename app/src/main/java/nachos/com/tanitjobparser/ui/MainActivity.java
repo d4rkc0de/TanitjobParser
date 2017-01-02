@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
@@ -36,6 +37,20 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                Log.d("onScrollStateChanged",String.valueOf(newState));
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                Log.d("onScrolledx",String.valueOf(dx));
+                Log.d("onScrolledy",String.valueOf(dy));
+            }
+        });
 
         mResults = new ArrayList<>();
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
@@ -65,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
             adapter = new OfferAdapter(mResults,MainActivity.this);
             recyclerView.setAdapter(adapter);
             adapter.setItemClickCallback(MainActivity.this);
-            
 
             ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
             itemTouchHelper.attachToRecyclerView(recyclerView);

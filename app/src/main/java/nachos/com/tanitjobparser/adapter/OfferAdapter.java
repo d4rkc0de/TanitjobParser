@@ -50,18 +50,20 @@ public class OfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemViewType(int position) {
-        return (listData.size()+1)%2 != 0 ? VIEW_ITEM : VIEW_PROG;
+        return listData.get(position) != null ? VIEW_ITEM : VIEW_PROG;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder vh;
         if (viewType == VIEW_ITEM) {
+            Log.d("bottom","bottom");
             View v = LayoutInflater.from(parent.getContext()).inflate(
                     R.layout.list_item, parent, false);
 
             vh = new OfferHolder(v);
         } else {
+            Log.d("bottom","not bottom");
             View v = LayoutInflater.from(parent.getContext()).inflate(
                     R.layout.progressbar_item, parent, false);
             vh = new ProgressViewHolder(v);
@@ -84,7 +86,7 @@ public class OfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return listData.size();
+        return listData.size() + 1;
     }
 
     class OfferHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

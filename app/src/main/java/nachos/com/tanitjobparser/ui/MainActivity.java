@@ -74,7 +74,10 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
 
     @Override
     public void onDone(List<Offer> results) {
-        mResults.addAll(results);
+        if(results != null)
+             mResults.addAll(results);
+        else
+        Toast.makeText(getApplicationContext(),"error",Toast.LENGTH_SHORT).show();
         //mResults = results;
         if(results != null) {
             adapter = new OfferAdapter(mResults,MainActivity.this);

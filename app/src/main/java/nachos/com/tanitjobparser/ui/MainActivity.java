@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         setSwipeRefreshListener();
 
-        loadMore(counter++);
+        loadNextPage();
 
     }
 
@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadMore(counter++);
                 adapter.notifyDataSetChanged();
                 recyclerView.post( new Runnable() {
                     @Override
@@ -95,6 +94,11 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
     @Override
     public void moveItemUp(int pos) {
 
+    }
+
+    @Override
+    public void loadNextPage() {
+        loadMore(counter++);
     }
 
     private void loadMore(int counter) {

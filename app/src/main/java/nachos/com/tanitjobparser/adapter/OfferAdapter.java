@@ -36,6 +36,7 @@ public class OfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         void onItemClick(int pos);
         void onCompanyImageClick(int pos);
         void moveItemUp(int pos);
+        void loadNextPage();
     }
 
     public void setItemClickCallback(final ItemClickCallback itemClickCallback) {
@@ -51,6 +52,8 @@ public class OfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public int getItemViewType(int position) {
         Log.d("position",String.valueOf(position));
+        if(listData.size()- 5 == position)
+            itemClickCallback.loadNextPage();
         return (listData.size() == position) ? VIEW_PROG : VIEW_ITEM;
     }
 

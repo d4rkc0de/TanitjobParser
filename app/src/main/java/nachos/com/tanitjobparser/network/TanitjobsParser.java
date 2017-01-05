@@ -2,6 +2,7 @@ package nachos.com.tanitjobparser.network;
 
 import android.os.AsyncTask;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

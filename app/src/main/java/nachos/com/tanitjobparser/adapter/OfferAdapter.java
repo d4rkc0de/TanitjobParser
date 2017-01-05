@@ -50,7 +50,8 @@ public class OfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemViewType(int position) {
-        return listData.get(position) != null ? VIEW_ITEM : VIEW_PROG;
+        Log.d("position",String.valueOf(position));
+        return (listData.size() == position) ? VIEW_PROG : VIEW_ITEM;
     }
 
     @Override

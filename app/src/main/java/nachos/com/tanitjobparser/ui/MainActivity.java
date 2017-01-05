@@ -2,7 +2,6 @@ package nachos.com.tanitjobparser.ui;
 
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +19,7 @@ import nachos.com.tanitjobparser.R;
 import nachos.com.tanitjobparser.adapter.OfferAdapter;
 import nachos.com.tanitjobparser.model.Offer;
 import nachos.com.tanitjobparser.network.TanitjobsParser;
+import nachos.com.tanitjobparser.utils.RecyclerViewItemTouchHelper;
 
 public class MainActivity extends AppCompatActivity implements OfferAdapter.ItemClickCallback,TanitjobsParser.AsyncTaskCallback {
 
@@ -37,23 +37,16 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                Log.d("onScrollStateChanged",String.valueOf(newState));
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                Log.d("onScrolledx",String.valueOf(dx));
-                Log.d("onScrolledy",String.valueOf(dy));
-            }
-        });
-
         mResults = new ArrayList<>();
+
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        setSwipeRefreshListener();
+
+        loadMore(counter++);
+
+    }
+
+    public void setSwipeRefreshListener() {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -67,9 +60,6 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
                 });
             }
         });
-
-        loadMore(counter++);
-
     }
 
     @Override
@@ -77,52 +67,17 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
         if(results != null)
              mResults.addAll(results);
         else
-        Toast.makeText(getApplicationContext(),"error",Toast.LENGTH_SHORT).show();
-        //mResults = results;
+            Toast.makeText(getApplicationContext(),"error",Toast.LENGTH_SHORT).show();
+
         if(results != null) {
             adapter = new OfferAdapter(mResults,MainActivity.this);
             recyclerView.setAdapter(adapter);
             adapter.setItemClickCallback(MainActivity.this);
 
-            ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
+            RecyclerViewItemTouchHelper helper = new RecyclerViewItemTouchHelper(adapter,mResults);
+            ItemTouchHelper itemTouchHelper = new ItemTouchHelper(helper.createHelperCallback());
             itemTouchHelper.attachToRecyclerView(recyclerView);
         }
-    }
-
-    private ItemTouchHelper.Callback createHelperCallback() {
-        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN,
-                        ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-
-                    @Override
-                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                        moveItem(viewHolder.getAdapterPosition(), target.getAdapterPosition());
-                        return true;
-                    }
-
-                    @Override
-                    public void onSwiped(final RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                        deleteItem(viewHolder.getAdapterPosition());
-                    }
-                };
-        return simpleItemTouchCallback;
-    }
-
-    private void addItemToList(Offer offer) {
-        mResults.add(offer);
-        adapter.notifyItemInserted(mResults.indexOf(offer));
-    }
-
-    private void moveItem(int oldPos, int newPos) {
-
-        Offer offer = mResults.get(oldPos);
-        mResults.remove(oldPos);
-        mResults.add(newPos, offer);
-        adapter.notifyItemMoved(oldPos, newPos);
-    }
-
-    private void deleteItem(final int position) {
-        mResults.remove(position);
-        adapter.notifyItemRemoved(position);
     }
 
     @Override

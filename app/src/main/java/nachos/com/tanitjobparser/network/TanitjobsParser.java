@@ -1,23 +1,16 @@
 package nachos.com.tanitjobparser.network;
 
 import android.os.AsyncTask;
-import android.support.v7.widget.helper.ItemTouchHelper;
-import android.widget.Toast;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import nachos.com.tanitjobparser.adapter.OfferAdapter;
 import nachos.com.tanitjobparser.model.Offer;
-import nachos.com.tanitjobparser.ui.MainActivity;
 
 /**
  * Created by lichiheb on 31/12/16.
@@ -45,12 +38,12 @@ public class TanitjobsParser extends AsyncTask<String, Void, List<Offer>> {
                 Element detail = element.select("div.detail").first();
                 String title = detail.select("div.detail a[href]").first().ownText();
                 String url = detail.select("a.title_offre").first().attr("abs:href");
-                String comanyName = detail.select("#companytitle").first().text();
+                String companyName = detail.select("#companytitle").first().text();
                 String imgUrl = element.select("div.image img").first().absUrl("src");
-                Element descriptionjob = detail.select("div.descriptionjob").first();
+                Element descriptionJob = detail.select("div.descriptionjob").first();
                 String datePlace = "";
-                if(descriptionjob.select("p.infoplusoffer").first() != null)
-                    datePlace = descriptionjob.select("p.infoplusoffer").first().text();
+                if(descriptionJob.select("p.infoplusoffer").first() != null)
+                    datePlace = descriptionJob.select("p.infoplusoffer").first().text();
                 String place = "";
                 String dateString = "";
                 String[] splitedDatePlace = datePlace.split("\\|");
@@ -71,8 +64,8 @@ public class TanitjobsParser extends AsyncTask<String, Void, List<Offer>> {
                     e.printStackTrace();
                 }
 
-                Offer offre = new Offer(title,url,comanyName,imgUrl,place,date);
-                results.add(offre);
+                Offer offer = new Offer(title,url,companyName,imgUrl,place,date);
+                results.add(offer);
             }
             return results;
         } catch (IOException e) {

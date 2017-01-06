@@ -29,13 +29,13 @@ public class OfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private Context context;
     private final int VIEW_ITEM = 1;
     private final int VIEW_PROG = 0;
+    private final int VISIBLE_ITEMS = 6;
 
     private ItemClickCallback itemClickCallback;
 
     public interface ItemClickCallback {
         void onItemClick(int pos);
         void onCompanyImageClick(int pos);
-        void moveItemUp(int pos);
         void loadNextPage();
     }
 
@@ -51,25 +51,19 @@ public class OfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemViewType(int position) {
-        Log.d("position",String.valueOf(position));
-        if(listData.size()- 5 == position)
+        if(position == listData.size() - VISIBLE_ITEMS)
             itemClickCallback.loadNextPage();
-        return (listData.size() == position) ? VIEW_PROG : VIEW_ITEM;
+        return (position == listData.size()) ? VIEW_PROG : VIEW_ITEM;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder vh;
         if (viewType == VIEW_ITEM) {
-            Log.d("bottom","bottom");
-            View v = LayoutInflater.from(parent.getContext()).inflate(
-                    R.layout.list_item, parent, false);
-
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
             vh = new OfferHolder(v);
         } else {
-            Log.d("bottom","not bottom");
-            View v = LayoutInflater.from(parent.getContext()).inflate(
-                    R.layout.progressbar_item, parent, false);
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.progressbar_item, parent, false);
             vh = new ProgressViewHolder(v);
         }
         return vh;

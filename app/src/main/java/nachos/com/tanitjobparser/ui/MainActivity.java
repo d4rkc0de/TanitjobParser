@@ -8,11 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.widget.Toast;
-
 import org.greenrobot.eventbus.EventBus;
-
 import java.util.ArrayList;
 import java.util.List;
 import nachos.com.tanitjobparser.R;
@@ -20,14 +17,16 @@ import nachos.com.tanitjobparser.adapter.OfferAdapter;
 import nachos.com.tanitjobparser.model.Offer;
 import nachos.com.tanitjobparser.network.TanitjobsParser;
 import nachos.com.tanitjobparser.utils.RecyclerViewItemTouchHelper;
+import static nachos.com.tanitjobparser.utils.Utils.isOnline;
 
 public class MainActivity extends AppCompatActivity implements OfferAdapter.ItemClickCallback,TanitjobsParser.AsyncTaskCallback {
 
     private RecyclerView recyclerView;
     private OfferAdapter adapter;
     private List<Offer> mResults;
-    SwipeRefreshLayout mSwipeRefreshLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private int counter = 0;
+    private boolean isFirst = true;
 
 
     @Override
@@ -43,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
         setSwipeRefreshListener();
 
         loadNextPage();
-
     }
 
     public void setSwipeRefreshListener() {
@@ -63,20 +61,29 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
 
     @Override
     public void onDone(List<Offer> results) {
-        if(results != null)
-             mResults.addAll(results);
-        else
-            Toast.makeText(getApplicationContext(),"error",Toast.LENGTH_SHORT).show();
-
         if(results != null) {
-            adapter = new OfferAdapter(mResults,MainActivity.this);
-            recyclerView.setAdapter(adapter);
-            adapter.setItemClickCallback(MainActivity.this);
+            if(isFirst)
+                setUpList(results);
+            else
+                addToList(results);
+        } else
+            Toast.makeText(getApplicationContext(),"Didn't find any offers!",Toast.LENGTH_SHORT).show();
+    }
 
-            RecyclerViewItemTouchHelper helper = new RecyclerViewItemTouchHelper(adapter,mResults);
-            ItemTouchHelper itemTouchHelper = new ItemTouchHelper(helper.createHelperCallback());
-            itemTouchHelper.attachToRecyclerView(recyclerView);
-        }
+    private void addToList(List<Offer> results) {
+        mResults.addAll(results);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void setUpList(List<Offer> results) {
+        mResults = results;
+        adapter = new OfferAdapter(mResults,MainActivity.this);
+        recyclerView.setAdapter(adapter);
+        adapter.setItemClickCallback(MainActivity.this);
+        RecyclerViewItemTouchHelper helper = new RecyclerViewItemTouchHelper(adapter,mResults);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(helper.createHelperCallback());
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+        isFirst = false;
     }
 
     @Override
@@ -92,13 +99,11 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
     }
 
     @Override
-    public void moveItemUp(int pos) {
-
-    }
-
-    @Override
     public void loadNextPage() {
-        loadMore(counter++);
+        if(isOnline(this))
+            loadMore(counter++);
+        else
+            Toast.makeText(getApplicationContext(),"No internet Connection!",Toast.LENGTH_SHORT).show();
     }
 
     private void loadMore(int counter) {

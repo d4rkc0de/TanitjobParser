@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
     private List<Offer> mResults;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private int counter = 0;
-    private boolean isFirst = true;
+    private boolean isFirst = true,online = false;
 
 
     @Override
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         setSwipeRefreshListener();
-
+        online = isOnline(this);
         loadNextPage();
     }
 
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
 
     @Override
     public void loadNextPage() {
-        if(isOnline(this))
+        if(online)
             loadMore(counter++);
         else
             Toast.makeText(getApplicationContext(),"No internet Connection!",Toast.LENGTH_SHORT).show();

@@ -34,7 +34,7 @@ public class OfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private ItemClickCallback itemClickCallback;
 
     public interface ItemClickCallback {
-        void onItemClick(int pos);
+        void onItemClick(int pos,View v);
         void onCompanyImageClick(int pos);
         void loadNextPage();
     }
@@ -109,7 +109,7 @@ public class OfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         @Override
         public void onClick(View v) {
             if(v.getId() == R.id.container)
-                itemClickCallback.onItemClick(getAdapterPosition());
+                itemClickCallback.onItemClick(getAdapterPosition(),v);
             else if(v.getId() == R.id.image)
                 itemClickCallback.onCompanyImageClick(getAdapterPosition());
         }

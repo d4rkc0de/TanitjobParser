@@ -10,4 +10,20 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="nachos.com.tanitjobparser.ui.DetailledOffer">
 
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:transitionName="offerImage"
+        android:src="@drawable/test_image"/>
+
+    <TextView
+        android:layout_marginRight="20dp"
+        android:layout_alignParentRight="true"
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:transitionName="offerTitle"
+        android:textSize="25sp"
+        android:text="Developeur Java"/>
 </RelativeLayout>

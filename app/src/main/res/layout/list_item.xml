@@ -22,6 +22,7 @@
             android:layout_height="60dp"
             android:layout_margin="5dp"
             android:padding="1dp"
+            android:transitionName="offerImage"
             android:src="@drawable/test_image"/>
 
         <LinearLayout
@@ -35,6 +36,7 @@
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:transitionName="offerTitle"
                 android:text="Developeur Java"/>
 
             <TextView

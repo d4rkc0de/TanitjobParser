@@ -1,13 +1,18 @@
 package nachos.com.tanitjobparser.ui;
 
 
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Pair;
+import android.view.View;
 import android.widget.Toast;
 import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
@@ -86,11 +91,15 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
         isFirst = false;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
-    public void onItemClick(int pos) {
+    public void onItemClick(int pos,View v) {
         Offer offer = mResults.get(pos);
         EventBus.getDefault().postSticky(offer);
-        startActivity(new Intent(MainActivity.this,DetailledOffer.class));
+        Pair<View, String> p1 = Pair.create(v.findViewById(R.id.image), "offerImage");
+        Pair<View, String> p2 = Pair.create(v.findViewById(R.id.title), "offerTitle");
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this, p1,p2);
+        startActivity(new Intent(MainActivity.this,DetailledOffer.class), options.toBundle());
     }
 
     @Override

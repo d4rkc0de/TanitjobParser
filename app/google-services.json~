@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "1004207968588",
+    "firebase_url": "https://job-parser.firebaseio.com",
+    "project_id": "job-parser",
+    "storage_bucket": "job-parser.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1004207968588:android:a77b1b82651fb3ab",
+        "android_client_info": {
+          "package_name": "nachos.com.tanitjobparser"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1004207968588-jfv929kr5s0u1afhmsk4tjof5hvb953k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

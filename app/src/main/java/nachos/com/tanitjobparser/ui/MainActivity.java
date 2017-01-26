@@ -14,9 +14,17 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Toast;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import nachos.com.tanitjobparser.R;
 import nachos.com.tanitjobparser.adapter.OfferAdapter;
 import nachos.com.tanitjobparser.model.Offer;
@@ -32,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private int counter = 0;
     private boolean isFirst = true,online = false;
-
+    private DatabaseReference root = FirebaseDatabase.getInstance().getReference().getRoot();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,10 +133,21 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
     }
 
     private List<Offer> listByType(List<Offer> list,String type) {
+        Map<String,Object> map = new HashMap<>();
         List<Offer> result = new ArrayList<>();
-        for(Offer offer:list)
+        for(Offer offer:list) {
+            map.put("url",offer.getUrl());
+            map.put("title",offer.getTitle());
+            map.put("comanyName",offer.getComanyName());
+            map.put("imgUrl",offer.getImgUrl());
+            map.put("place",offer.getPlace());
+            map.put("date",offer.getDate());
             if(offer.getTitle().toLowerCase().contains(type))
                 result.add(offer);
+        }
+
+        root.updateChildren(map);
+
         return result;
     }
 

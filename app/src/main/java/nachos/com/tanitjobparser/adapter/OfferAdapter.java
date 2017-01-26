@@ -51,7 +51,7 @@ public class OfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemViewType(int position) {
-        if(position == listData.size() - VISIBLE_ITEMS)
+        if(position >= listData.size() - VISIBLE_ITEMS)
             itemClickCallback.loadNextPage();
         return (position == listData.size()) ? VIEW_PROG : VIEW_ITEM;
     }
@@ -76,6 +76,7 @@ public class OfferAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ((OfferHolder)holder).title.setText(offer.getTitle());
             ((OfferHolder)holder).comanyName.setText(offer.getComanyName());
             ((OfferHolder)holder).location.setText(offer.getPlace());
+            ((OfferHolder)holder).date.setText(offer.getDate());
             Picasso.with(context).load(offer.getImgUrl()).into(((OfferHolder)holder).image);
         }  else {
             ((ProgressViewHolder) holder).progressBar.setIndeterminate(true);

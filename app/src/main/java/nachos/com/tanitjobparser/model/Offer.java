@@ -14,9 +14,9 @@ public class Offer {
     String comanyName = "";
     String imgUrl = "";
     String place = "";
-    Date date = null;
+    String date = null;
 
-    public Offer(String title,String url,String comanyName,String imgUrl,String place,Date date) {
+    public Offer(String title,String url,String comanyName,String imgUrl,String place,String date) {
         this.title = title;
         this.comanyName = comanyName;
         this.imgUrl = encodeUrl(imgUrl);
@@ -65,11 +65,11 @@ public class Offer {
         this.place = place;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 }

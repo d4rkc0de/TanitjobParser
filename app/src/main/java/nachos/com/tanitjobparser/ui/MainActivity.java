@@ -76,12 +76,14 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
     }
 
     private void addToList(List<Offer> results) {
-        mResults.addAll(results);
+        //mResults.addAll(results);
+        mResults.addAll(listByType(results,"java"));
         adapter.notifyDataSetChanged();
     }
 
     private void setUpList(List<Offer> results) {
-        mResults = results;
+        //mResults = results;
+        mResults = listByType(results,"java");
         adapter = new OfferAdapter(mResults,MainActivity.this);
         recyclerView.setAdapter(adapter);
         adapter.setItemClickCallback(MainActivity.this);
@@ -120,6 +122,14 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
         tanitjobsParser.setAsyncTaskCallback(MainActivity.this);
         tanitjobsParser.execute("http://tanitjobs.com/search-results-jobs/?searchId=1483197031.949&action=search&page="
                 + String.valueOf(counter) + "&view=list");
+    }
+
+    private List<Offer> listByType(List<Offer> list,String type) {
+        List<Offer> result = new ArrayList<>();
+        for(Offer offer:list)
+            if(offer.getTitle().toLowerCase().contains(type))
+                result.add(offer);
+        return result;
     }
 
 }

@@ -1,6 +1,8 @@
 package nachos.com.tanitjobparser.network;
 
 import android.os.AsyncTask;
+import android.util.Log;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -45,25 +47,18 @@ public class TanitjobsParser extends AsyncTask<String, Void, List<Offer>> {
                 if(descriptionJob.select("p.infoplusoffer").first() != null)
                     datePlace = descriptionJob.select("p.infoplusoffer").first().text();
                 String place = "";
-                String dateString = "";
+                String date = "";
                 String[] splitedDatePlace = datePlace.split("\\|");
                 if(splitedDatePlace.length == 2) {
                     place = splitedDatePlace[0];
-                    dateString = splitedDatePlace[1];
+                    date = splitedDatePlace[1];
                 } else if(splitedDatePlace.length == 1 && !splitedDatePlace[0].equals("")) {
                     if(Character.isLetter(splitedDatePlace[0].charAt(0)))
                         place = splitedDatePlace[0];
                     else
-                        dateString = splitedDatePlace[0];
+                        date = splitedDatePlace[0];
                 }
-                Date date = null;
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
-                try {
-                    date = simpleDateFormat.parse(dateString);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
+    
                 Offer offer = new Offer(title,url,companyName,imgUrl,place,date);
                 results.add(offer);
             }

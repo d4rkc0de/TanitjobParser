@@ -30,14 +30,10 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     // Google services
-    apply plugin: 'com.google.gms.google-services'
     compile 'com.google.firebase:firebase-database:9.0.2'
     compile 'com.google.firebase:firebase-core:9.0.2'
+    apply plugin: 'com.google.gms.google-services'
 
-
-    // Parse
-    compile 'com.parse.bolts:bolts-android:1.+'
-    compile 'com.parse:parse-android:1.+'
     // https://mvnrepository.com/artifact/org.jsoup/jsoup
     compile group: 'org.jsoup', name: 'jsoup', version: '1.9.2'
     // Picasso

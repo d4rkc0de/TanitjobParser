@@ -16,6 +16,10 @@ public class Offer {
     String place = "";
     String date = null;
 
+    public Offer() {
+
+    }
+
     public Offer(String title,String url,String comanyName,String imgUrl,String place,String date) {
         this.title = title;
         this.comanyName = comanyName;

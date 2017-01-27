@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private int counter = 0;
     private boolean isFirst = true,online = false;
-    private DatabaseReference root = FirebaseDatabase.getInstance().getReference().getRoot();
+    private DatabaseReference database = FirebaseDatabase.getInstance().getReference("offer");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +136,8 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
         Map<String,Object> map = new HashMap<>();
         List<Offer> result = new ArrayList<>();
         for(Offer offer:list) {
+            String offerId = database.push().getKey();
+            database.child(offerId).setValue(offer);
             map.put("url",offer.getUrl());
             map.put("title",offer.getTitle());
             map.put("comanyName",offer.getComanyName());
@@ -146,7 +148,6 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
                 result.add(offer);
         }
 
-        root.updateChildren(map);
 
         return result;
     }

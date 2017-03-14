@@ -11,8 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.util.Pair;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
     private int counter = 0;
     private boolean isFirst = true,online = false;
     private DatabaseReference database = FirebaseDatabase.getInstance().getReference("offer");
+    Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +65,22 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
     }
 
     private void setSpinner() {
-        Spinner spinner = (Spinner) findViewById(R.id.optionss_spinner);
+        spinner = (Spinner) findViewById(R.id.optionss_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.languages_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String items = spinner.getSelectedItem().toString();
+                Log.i("Selected item : ", items);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     public void setSwipeRefreshListener() {

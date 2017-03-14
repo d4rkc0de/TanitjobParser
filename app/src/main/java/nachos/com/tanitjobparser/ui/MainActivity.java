@@ -13,6 +13,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Pair;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
@@ -51,10 +53,19 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         mResults = new ArrayList<>();
 
+        setSpinner();
+
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         setSwipeRefreshListener();
         online = isOnline(this);
         loadNextPage();
+    }
+
+    private void setSpinner() {
+        Spinner spinner = (Spinner) findViewById(R.id.optionss_spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.languages_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
     }
 
     public void setSwipeRefreshListener() {

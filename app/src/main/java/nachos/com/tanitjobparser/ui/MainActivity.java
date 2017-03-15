@@ -40,12 +40,14 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
 
     private RecyclerView recyclerView;
     private OfferAdapter adapter;
-    private List<Offer> mResults;
+    private List<Offer> mResults,mFilteredResults;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private int counter = 0;
     private boolean isFirst = true,online = false;
     private DatabaseReference database = FirebaseDatabase.getInstance().getReference("offer");
-    Spinner spinner;
+    private Spinner spinner;
+    private String spinnerSelectedOption = null;
+    private boolean isItemSelected = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         mResults = new ArrayList<>();
+        mFilteredResults = new ArrayList<>();
 
         setSpinner();
 
@@ -72,8 +75,9 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String items = spinner.getSelectedItem().toString();
-                Log.i("Selected item : ", items);
+                if(isItemSelected)
+                    filterResults(spinner.getSelectedItem().toString());
+                isItemSelected = true;
             }
 
             @Override
@@ -109,19 +113,29 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
             Toast.makeText(getApplicationContext(),"Didn't find any offers!",Toast.LENGTH_SHORT).show();
     }
 
+    private void filterResults(String option) {
+        spinnerSelectedOption = option;
+        mFilteredResults.clear();
+        mFilteredResults = listByType(mResults,option);
+        adapter.notifyDataSetChanged();
+    }
+
     private void addToList(List<Offer> results) {
-        //mResults.addAll(results);
-        mResults.addAll(listByType(results,"java"));
+        mResults.addAll(results);
+        if(spinnerSelectedOption != null)
+            mFilteredResults.addAll(listByType(results,spinnerSelectedOption));
+        else
+            mFilteredResults.addAll(results);
         adapter.notifyDataSetChanged();
     }
 
     private void setUpList(List<Offer> results) {
-        //mResults = results;
-        mResults = listByType(results,"java");
-        adapter = new OfferAdapter(mResults,MainActivity.this);
+        mFilteredResults = mResults = results;
+        Log.d("resultsSize",mResults.size()+"");
+        adapter = new OfferAdapter(mFilteredResults,MainActivity.this);
         recyclerView.setAdapter(adapter);
         adapter.setItemClickCallback(MainActivity.this);
-        RecyclerViewItemTouchHelper helper = new RecyclerViewItemTouchHelper(adapter,mResults);
+        RecyclerViewItemTouchHelper helper = new RecyclerViewItemTouchHelper(adapter,mFilteredResults);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(helper.createHelperCallback());
         itemTouchHelper.attachToRecyclerView(recyclerView);
         isFirst = false;
@@ -130,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onItemClick(int pos,View v) {
-        Offer offer = mResults.get(pos);
+        Offer offer = mFilteredResults.get(pos);
         EventBus.getDefault().postSticky(offer);
         Pair<View, String> p1 = Pair.create(v.findViewById(R.id.image), "offerImage");
         Pair<View, String> p2 = Pair.create(v.findViewById(R.id.title), "offerTitle");
@@ -170,11 +184,11 @@ public class MainActivity extends AppCompatActivity implements OfferAdapter.Item
             map.put("imgUrl",offer.getImgUrl());
             map.put("place",offer.getPlace());
             map.put("date",offer.getDate());
-            if(offer.getTitle().toLowerCase().contains(type))
+            if(offer.getTitle().toLowerCase().contains(type.toLowerCase()))
                 result.add(offer);
         }
-
-
+        Log.d("resultSize",result.size()+"");
+        for(Offer offer:result) Log.d("results",offer.getTitle());
         return result;
     }
 
